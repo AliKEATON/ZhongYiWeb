@@ -1,49 +1,49 @@
 <template>
   <div class="app-container">
-    <el-container>
-      <el-header class="app-header">
-          <i class="el-icon-s-home"></i>
-          <span style="padding-left : 15px; font-weight: bold;">欢迎您使用中医体制检测系统！</span>
-          <span style="padding-left : 1200px;" >
-            <i class="el-icon-edit" style="padding-right: 20px;"></i>
-            <i class="el-icon-share" style="padding-right: 20px;"></i>
-            <i class="el-icon-delete" style="padding-right: 20px;"></i>
-            <el-button type="primary" icon="el-icon-search">搜索</el-button>
-            <i class="el-icon-switch-button" style="padding-left: 20px;"></i>
-            <span @click="Logout">退出登录</span> 
-          </span>
-        </el-header>
+    <el-container direction="vertical">
+      <!-- 引用 Header 组件 -->
+      <Header @logout="Logout" />
 
       <el-container>
-        <el-aside class="app-aside">
-          <div class="aside-item" >检测报告</div>
-          <div class="aside-item" @click="toHistory">用户历史</div>
-          <div class="aside-item" @click="toFeedback">问卷反馈</div>
-        </el-aside>
+        <!-- 引用 Sidebar 组件 -->
+        <Sidebar @toHistory="toHistory" @toFeedback="toFeedback" />
 
         <el-main class="app-main">
-          <div class="content-block">
+          <div style="background-color: #ffffff; padding: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; gap: 80px; padding-left: 80px;">
             <el-image class="user-image" :src="url" :fit="fit"></el-image>
-            <div> 
-              <p>姓名：{{ usrmessage.username }}</p>
-              <p>身高：{{ usrmessage.height }} cm</p>
-            </div>
-            <div> 
-              <p>性别：{{ usrmessage.gender }}</p>
-              <p>体重：{{ usrmessage.weight }} kg</p>
-            </div>
-            <div> 
-              <p>检测时间：{{ usrmessage.createtime }}</p>
-              <p>状态：{{ usrmessage.finalCorporeity }}</p>
-            </div>
+            <el-descriptions title="基本信息" :column="3" border size="medium">
+              <el-descriptions-item label="姓名" label-class-name="my-label">{{ usrmessage.username}}</el-descriptions-item>
+              <el-descriptions-item label="身高">{{ usrmessage.height }}</el-descriptions-item>
+              <el-descriptions-item label="体重">{{ usrmessage.weight }}</el-descriptions-item>
+              <el-descriptions-item label="性别">{{ usrmessage.gender }}</el-descriptions-item>
+              <el-descriptions-item label="状态" :contentStyle="{'text-align': 'right'}">{{ usrmessage.finalCorporeity }}</el-descriptions-item>
+              <el-descriptions-item label="检测时间">{{ usrmessage.createtime }}</el-descriptions-item>
+            </el-descriptions>
           </div>
+
           <br>
-          <div style="background-color: #ffffff; padding: 20px;">
-            <el-table :data="tableData" height="500px" cell-style="font-size: 18px;" header-cell-style="font-size: 20px;" >
-            <el-table-column prop="analyze" label="体制解析" width="350px"></el-table-column>
-            <el-table-column prop="expression" label="体制表现" width="350px"></el-table-column>
-            <el-table-column prop="sick" label="患病倾向" width="350px"></el-table-column>
-            <el-table-column prop="eat" label="建议"></el-table-column>
+          <div style="background-color: #ffffff; padding: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            <el-table :data="tableData" height="550px" cell-style="font-size: 18px;" header-cell-style="font-size: 20px;" border stripe>
+              <el-table-column prop="analyze" label="体制解析" width="350px">
+                <template #default="{ row }">
+                  <div class="cell-content">{{ row.analyze }}</div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="expression" label="体制表现" width="350px">
+                <template #default="{ row }">
+                  <div class="cell-content">{{ row.expression }}</div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="sick" label="患病倾向" width="350px">
+                <template #default="{ row }">
+                  <div class="cell-content">{{ row.sick }}</div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="eat" label="建议">
+                <template #default="{ row }">
+                  <div class="cell-content">{{ row.eat }}</div>
+                </template>
+              </el-table-column>
             </el-table>
           </div>
         </el-main>
@@ -54,8 +54,15 @@
 
 <script>
 import api from '@/utils/api';
+// 引入 Header 和 Sidebar 组件
+import Header from '@/components/Header.vue';
+import Sidebar from '@/components/Sidebar.vue';
 
 export default {
+  components: {
+    Header,
+    Sidebar
+  },
   data() {
     return {
       url: '',
@@ -99,53 +106,34 @@ export default {
   height: 100%;
 }
 
-.app-aside {
-  width: 200px;
-  background-color: #ffffff;
-}
-
-.aside-item {
-  text-align: center;
-  padding: 15px;
-  height: 29px;
-  border-bottom: 1px solid skyblue;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  background-color: white;
-}
-
-.aside-item:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.app-header {
-  /* background-color: #B3C0D1; */
-  background-color: #ffffff;
-  font-size: 18px;
-  color: #333;
-  line-height: 60px;
-}
-
 .app-main {
   padding-left: 50px;
   padding-right: 50px;
   padding-top: 30px;
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.content-block {
-  background-color: #ffffff;
-  height: 200px;
-  padding-left: 70px;
-  align-items: center;
-  display: flex;
-  gap: 50px;
+  background-color: #f5f7fa;
 }
 
 .user-image {
   width: 100px;
-  height: 125px;
+  height: 120px;
+  border-radius: 10%;
+  border: 2px solid #00a2ff;
+  padding: 2px; 
+  background: #f0f0f0;
 }
 
+.my-label {
+    background: #E1F3D8;
+  }
 
+.cell-content {
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  height: 500px; /* 固定高度 */
+  overflow: auto; /* 内容超出时显示滚动条 */
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 8px;
+  line-height: 1.5;
+}
 </style>
